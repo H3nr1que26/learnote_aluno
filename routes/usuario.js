@@ -9,9 +9,7 @@ router.post('/cadastro', (req, res, next)=>{
     mysql.getConnection((error, conn)=>{
         if(error) {return res.status(500).send({error2:error})}
         bcrypt.hash(req.body.usu_senha, 16, (errBcrypt,hash)=>{
-            
             if(errBcrypt){return res.status(500).send({ error1:errBcrypt})}
-
             conn.query(' INSERT INTO usu_usuario(usu_nome, usu_email,usu_senha,per_codigo) VALUES(?,?,?,?)',[req.body.usu_nome,req.body.usu_email,hash,req.body.per_codigo],
              (error,results) =>{
                 conn.release();
