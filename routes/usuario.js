@@ -3,8 +3,9 @@ const router = express.Router();
 const mysql = require('./mysql').pool;
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const login = require('../middleware/login');
 
-router.post('/cadastro', (req, res, next)=>{
+router.post('/cadastro', login.opcional, (req, res, next)=>{
   
     mysql.getConnection((error, conn)=>{
         if(error) {return res.status(500).send({error2:error})}
@@ -34,7 +35,7 @@ router.post('/cadastro', (req, res, next)=>{
     });
 })
 
-router.post('/login', (req, res, next) => {
+router.post('/login',login.opcional, (req, res, next) => {
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error })}
         const query = `SELECT * FROM usu_usuario WHERE usu_email = ?`;
@@ -52,8 +53,9 @@ router.post('/login', (req, res, next) => {
               
                 if (result) {
                     const token = jwt.sign({
-                        usu_usuario: results[0].usu_usuario,
-                        email: results[0].usu_email
+                       usu_codigo: results[0].usu_codigo,
+                      // usu_usuario: results[0].usu_usuario,
+                       //email: results[0].usu_email
                     }, process.env.JWT_KEY,
                     {
                        expiresIn: "1h" 
