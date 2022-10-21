@@ -7,14 +7,10 @@ const login = require('../middleware/login');
 
 
 router.get('/', login.obrigatorio, (req, res, next) => {
-   console.log(req.usu_usuario);
+   console.log("REQu: " + req.usu_usuario.usu_codigo);
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error2: error }) }
-        conn.query(`select sal_nome,per_descricao,usu_nome,usu_status from perf_perfilsala
-        inner join usu_usuario on usu_usuario.usu_codigo = perf_perfilsala.Usuario_Id
-        inner join sal_sala on sal_sala.sal_codigo = perf_perfilsala.Sala_codigo
-        inner join per_perfil on per_perfil.per_codigo = perf_perfilsala.Perfil_codigo
-        where usu_codigo = 'req.usu_usuario';`,
+        conn.query("select sal_nome,per_descricao,usu_nome,usu_status from perf_perfilsala inner join usu_usuario on usu_usuario.usu_codigo = perf_perfilsala.Usuario_Id inner join sal_sala on sal_sala.sal_codigo = perf_perfilsala.Sala_codigo inner join per_perfil on per_perfil.per_codigo = perf_perfilsala.Perfil_codigo where usu_codigo = ?;", [req.usu_usuario.usu_codigo],
             (error, results) => {
                 if (error) { return res.status(500).send({ error2: error }) }
                 const response = {
@@ -28,7 +24,8 @@ router.get('/', login.obrigatorio, (req, res, next) => {
                         }
                     })
                 }
-                return res.status(201).send(response);
+                
+                return res.status(200).send(response);
 
             }
         )
